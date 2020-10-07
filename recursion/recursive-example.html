@@ -1,0 +1,82 @@
+<canvas id="ctx" width="1200" height="500" style="border:1px solid #000000;"></canvas>
+<script>
+	var ctx = document.getElementById("ctx").getContext("2d"); 
+	ctx.font = '30px Arial';
+	var Clenght = 1200,Cheight = 500;
+	line = function(x,y,lenght,direction,sw){
+	var me ={
+	x:x,
+	y:y,
+	lenght:lenght,
+	direction:direction,
+	sw:sw,
+	}
+	me.color = getRandomColor();
+	me.i = 0;
+	me.split = false;
+	me.splits = {};
+	me.splitt = function(){
+	var dir = me.direction;
+	var lenght = me.lenght;
+	if(lenght < 40)me.sw = "right";
+	if(lenght > 490)me.sw = "left";
+	if(me.sw == "left")lenght = lenght - lenght/10;
+	else lenght = lenght + lenght/10;
+	var x = me.x;
+	var y = me.y;
+	if(me.direction == "up"   ) {x += 10;}
+	if(me.direction == "down" ) {x -= 10;}  
+	if(me.direction == "left" ) {y -= 10;}
+	if(me.direction == "right") {y += 10;}
+	me.splits = line(x,y,lenght,dir,me.sw);
+	console.log(me.splits);
+	me.split = true;
+	}
+	
+	me.draw = function(){
+	ctx.save();
+	var x = me.x;
+	var y = me.y;
+	var nx = x;
+	var ny = y;
+	if(me.direction == "up"   ) {ny = -me.lenght; nx = 5; ctx.fillStyle = me.color;}
+	if(me.direction == "down" ) {ny = me.lenght; nx = 5;ctx.fillStyle = me.color;}  
+	if(me.direction == "left" ) {nx = -me.lenght; ny = 5;ctx.fillStyle = me.color;}
+	if(me.direction == "right") {nx = me.lenght; ny = 5;ctx.fillStyle = me.color;}
+	ctx.fillRect(x,y,nx,ny);
+	//console.log("x  - "+x+"  y  -  "+y+"  nx - "+nx+ "   ny - "+ny);
+	ctx.restore();
+	}
+	
+	me.update = function(){
+	me.draw();
+	me.i++;
+	if(me.i > 1 && me.split == false) me.splitt();
+	if(me.split == true) me.splits.update();
+	if(me.y > Cheight ){me.direction = "up"; me.y = Cheight;}
+	if(me.x > Clenght){me.direction = "left"; me.x = Clenght;}
+	if(me.y < 0 ){me.direction = "down"; me.y = 0;}
+	if(me.x < 0){me.direction = "right"; me.x = 0;}
+	}
+	
+	return me;
+	}
+	
+	getRandomColor = function() {
+	  var letters = '0123456789ABCDEF';
+	  var color = '#';
+	  for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	  }
+	  return color;
+}
+
+	var kor = line(0,0,498,"right","left");
+	update = function(){
+	ctx.clearRect(0,0,Clenght,Cheight);
+	kor.update();
+	}
+	ctx.beginPath();
+	setInterval(update,40);
+
+</script>

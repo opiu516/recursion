@@ -1,0 +1,102 @@
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+<script>
+	var ctx = document.getElementById("ctx").getContext("2d"); 
+	ctx.font = '30px Arial';
+	var Clenght = 500,Cheight = 500;
+	line = function(x,y,lenght,direction,sw){
+	var me ={
+	x:x,
+	y:y,
+	lenght:lenght,
+	direction:direction,
+	sw:sw,
+	}
+	me.color = getRandomColor();
+	me.i = 0;
+	me.split = false;
+	me.splits = {};
+	me.splitt = function(){
+		if(me.sw == "nos") return 0;
+		var d1,d2,d3;
+		var tempX,tempY;
+		tempX = me.x;
+		tempY = me.y;
+		var lenght = me.lenght/3;
+		if(me.direction == "right"){d1 = "up"; d2 = "right"; d3="down";}
+		if(me.direction == "left"){d1 = "down"; d2 = "left"; d3 ="up";}
+		if(me.direction == "up"){d1 = "left"; d2 = "up"; d3 = "right";}
+		if(me.direction == "down"){d1 = "right"; d2 = "down"; d3 = "left";}
+		me.splits[0] = line(tempX,tempY,lenght,me.direction,"nos");
+		if(me.direction == "right") tempX += lenght;
+		if(me.direction == "left") tempX -= lenght;
+		if(me.direction == "up") tempY -= lenght;
+		if(me.direction == "down") tempY += lenght;
+		me.splits[1] = line(tempX,tempY,lenght,d1,"kor");
+		if(d1 == "right") tempX += lenght;
+		if(d1 == "left") tempX -= lenght;
+		if(d1 == "up") tempY -= lenght;
+		if(d1 == "down") tempY += lenght;
+		me.splits[2] = line(tempX,tempY,lenght,d2,"kor");
+		if(d2 == "right") tempX += lenght;
+		if(d2 == "left") tempX -= lenght;
+		if(d2 == "up") tempY -= lenght;
+		if(d2 == "down") tempY += lenght;
+		me.splits[3] = line(tempX,tempY,lenght,d3,"kor");
+		if(d3 == "right") tempX += lenght;
+		if(d3 == "left") tempX -= lenght;
+		if(d3 == "up") tempY -= lenght;
+		if(d3 == "down") tempY += lenght;
+		me.splits[4] = line(tempX,tempY,lenght,me.direction,"nos");
+		
+		
+		
+		
+		me.split = true;
+	}
+	
+	me.draw = function(){
+	if(me.split == false){
+	ctx.save();
+	var x = me.x;
+	var y = me.y;
+	var nx = x;
+	var ny = y;
+	if(me.direction == "up"   ) {ny = -me.lenght; nx = 5; ctx.fillStyle = me.color;}
+	if(me.direction == "down" ) {ny = me.lenght; nx = 5;ctx.fillStyle = me.color;}  
+	if(me.direction == "left" ) {nx = -me.lenght; ny = 5;ctx.fillStyle = me.color;}
+	if(me.direction == "right") {nx = me.lenght; ny = 5;ctx.fillStyle = me.color;}
+	ctx.fillRect(x,y,nx,ny);
+	//console.log("x  - "+x+"  y  -  "+y+"  nx - "+nx+ "   ny - "+ny);
+	ctx.restore();
+	}
+	}
+	
+	me.update = function(){
+	me.draw();
+	me.i++;
+	if(me.i > 20 && me.split == false) me.splitt();
+	if(me.split == true) 
+	for(var i in me.splits) me.splits[i].update();
+	}
+	
+	return me;
+	}
+	
+	getRandomColor = function() {
+	  var letters = '0123456789ABCDEF';
+	  var color = '#';
+	  for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	  }
+	  return color;
+}
+
+	var kor = line(0,490,Clenght,"right","left");
+	update = function(){
+	ctx.clearRect(0,0,Clenght,Cheight);
+	kor.update();
+	}
+	ctx.beginPath();
+	setInterval(update,40);
+
+</script>
